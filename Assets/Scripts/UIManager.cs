@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class UIManager : MonoBehaviour
 {
@@ -16,5 +17,22 @@ public class UIManager : MonoBehaviour
     void Update()
     {
         
+    }
+
+    public void StartGame(){
+        PanelMainMenu.SetActive(false);
+        panelLevelMenu.SetActive(true);
+    }
+
+    public void ExitGame(){
+        Application.Quit();
+    }
+
+    public void BackToMenuFromLevelSelection(){
+        PanelMainMenu.SetActive(true);
+        panelLevelMenu.SetActive(false);
+    }
+    public void StartLevel(int index){
+        SceneManager.LoadScene(index);
     }
 }
