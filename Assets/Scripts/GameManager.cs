@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     void Update()
     {
         if (Input.GetButtonDown("Cancel")) {
-            Time.timeScale = Time.timeScale == 1 ? 0 : 1;
+            pause();
             SettingsMenu.instance.gameObject.SetActive(!SettingsMenu.instance.isActiveAndEnabled);
         }
     }
@@ -32,5 +32,8 @@ public class GameManager : MonoBehaviour
     public void StartLevel(int index)
     {
         SceneManager.LoadScene(index);
+    }
+    public void pause() {
+        Time.timeScale = Time.timeScale == 1 ? 0 : 1;
     }
 }

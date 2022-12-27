@@ -86,8 +86,8 @@ public class GridManager : MonoBehaviour
                     objectives.SetColor(objectGridPosition + new Vector3Int((int)horizontalMovement * 2, 0, 0), Color.cyan);
                     if (currentBoxes == 0)
                     {
-
                         Debug.Log(" You won");
+                        levelCompleted.Invoke();
                     }
 
                 }
@@ -128,6 +128,7 @@ public class GridManager : MonoBehaviour
                     if (currentBoxes == 0) {
 
                         Debug.Log(" You won");
+                        levelCompleted.Invoke();
                     }
 
                 }
