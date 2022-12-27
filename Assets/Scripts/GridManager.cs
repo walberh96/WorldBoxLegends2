@@ -28,25 +28,27 @@ public class GridManager : MonoBehaviour
     GameObject playerPrefab;
     private int currentBoxes; // Voy a ir descontando cada vez que pongo una caja en su lugar
     [SerializeField]
-    UnityEvent playerMovedUp, playerMovedDown,PlayerMovedLeft,PlayerMovedRight;
+    UnityEvent playerMovedUp, playerMovedDown, PlayerMovedLeft, PlayerMovedRight;
     [SerializeField]
     UnityEvent levelCompleted;
     [SerializeField]
     GameObject player;
     private float horizontalMovement, verticalMovement;
+    [SerializeField]
+    private Tile boxTile,objectiveTile, obstacleTile, wallTile;
 
     // Start is called before the first frame update
     void Start()
     {
-        
-        //walls.SetTile(new Vector3Int(0,0,0), TileBase.)
+
+        currentBoxes = 3;
     }
 
     void Update()
     {
         if (Input.GetButtonDown("Horizontal")){
             horizontalMovement = Input.GetAxisRaw("Horizontal");
-            if (canMoveHorizontal())
+            if (canMoveHorizontal(walls.WorldToCell(player.transform.position)))
             {
                 if (horizontalMovement == 1) PlayerMovedRight.Invoke();
                 else PlayerMovedLeft.Invoke(); 
@@ -55,7 +57,7 @@ public class GridManager : MonoBehaviour
         if (Input.GetButtonDown("Vertical"))
         {
             verticalMovement = Input.GetAxisRaw("Vertical");
-            if (canMoveVertical())
+            if (canMoveVertical(walls.WorldToCell(player.transform.position)))
             {
                 if (verticalMovement == 1) playerMovedUp.Invoke();
                 else playerMovedDown.Invoke();
@@ -63,28 +65,86 @@ public class GridManager : MonoBehaviour
             }
         }
     }
-    public bool canMoveHorizontal() {
+    public bool canMoveHorizontal(Vector3Int objectGridPosition) {
 
-        Vector3Int playerGridPosition = walls.WorldToCell(player.transform.position);
-
-        if (walls.HasTile(playerGridPosition + new Vector3Int((int)horizontalMovement,0,0)) || obstacles.HasTile(playerGridPosition + new Vector3Int((int)horizontalMovement, 0, 0))) {
+        if (walls.HasTile(objectGridPosition + new Vector3Int((int)horizontalMovement,0,0)) || obstacles.HasTile(objectGridPosition + new Vector3Int((int)horizontalMovement, 0, 0)) || (boxes.HasTile(objectGridPosition) && boxes.HasTile(objectGridPosition + new Vector3Int((int)horizontalMovement, 0, 0)))  ) {
             return false;
         }
-         
+        if (boxes.HasTile(objectGridPosition + new Vector3Int((int)horizontalMovement, 0, 0)))
+        {
+            Debug.Log("Hay una caja frente a el");
+            if (canMoveHorizontal(objectGridPosition + new Vector3Int((int)horizontalMovement, 0, 0)))
+            {
+                Debug.Log("Esa caja se puede mover");
+                boxes.SetTile(objectGridPosition + new Vector3Int((int)horizontalMovement, 0, 0), null);
+                boxes.SetTile(objectGridPosition + new Vector3Int((int)horizontalMovement*2, 0, 0),boxTile );
 
+                if (objectives.HasTile(objectGridPosition + new Vector3Int((int)horizontalMovement * 2, 0, 0)))
+                {
+                    Debug.Log("Caja en objetivo");
+                    currentBoxes--;
+                    objectives.SetColor(objectGridPosition + new Vector3Int((int)horizontalMovement * 2, 0, 0), Color.cyan);
+                    if (currentBoxes == 0)
+                    {
+
+                        Debug.Log(" You won");
+                    }
+
+                }
+                if (objectives.HasTile(objectGridPosition + new Vector3Int((int)horizontalMovement, 0, 0))) {
+                    Debug.Log("Caja fuera de objetivo");
+                    currentBoxes++;
+                    objectives.SetColor(objectGridPosition + new Vector3Int((int)horizontalMovement, 0, 0), Color.white);
+                }
+
+            }
+            else {
+                Debug.Log("Esa caja no se puede mover");
+                return false;
+            }
+        }
         return true;
         
     }
-    public bool canMoveVertical()
+    public bool canMoveVertical(Vector3Int objectGridPosition)
     {
-
-        Vector3Int playerGridPosition = walls.WorldToCell(player.transform.position);
-
-        if (walls.HasTile(playerGridPosition + new Vector3Int(0, (int)verticalMovement, 0)) || obstacles.HasTile(playerGridPosition + new Vector3Int(0, (int)verticalMovement, 0)))
+        if (walls.HasTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0)) || obstacles.HasTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0)) || (boxes.HasTile(objectGridPosition) && boxes.HasTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0))))
         {
             return false;
         }
-        return true;
+        if (boxes.HasTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0)))
+        {
+            
+            Debug.Log("Hay una caja frente a el");
+            if (canMoveVertical(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0)))
+            {
+                Debug.Log("Esa caja se puede mover");
+                boxes.SetTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0), null);
+                boxes.SetTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement * 2, 0), boxTile);
+                if (objectives.HasTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement * 2, 0))) {
+                    Debug.Log("Caja en objetivo");
+                    currentBoxes--;
+                    objectives.SetColor(objectGridPosition + new Vector3Int(0, (int)verticalMovement * 2, 0), Color.cyan);
+                    if (currentBoxes == 0) {
 
+                        Debug.Log(" You won");
+                    }
+
+                }
+                if (objectives.HasTile(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0)))
+                {
+                    Debug.Log("Caja fuera de objetivo");
+                    objectives.SetColor(objectGridPosition + new Vector3Int(0, (int)verticalMovement, 0), Color.white);
+                    currentBoxes++;
+                }
+
+            }
+            else
+            {
+                Debug.Log("Esa caja no se puede mover");
+                return false;
+            }
+        }
+        return true;
     }
 }
