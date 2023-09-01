@@ -1,6 +1,6 @@
 # World Box Legends
 
-World Box Legends is a single player game based on the popular game World Box Classic, but with added complexity. In this game, the player must use abilities in the right way to solve puzzles. 
+This is the new version of the first game I made and the reason I am a Game developer today. This one is being developed in Unity as the "NEW WORLDBOX" as a way to show my improvement over the years and just to have fun.
 
 ## Screenshots
 
